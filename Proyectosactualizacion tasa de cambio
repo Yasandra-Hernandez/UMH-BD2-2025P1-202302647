@@ -1,4 +1,4 @@
-DELIMITER $$
+DELIMITER //
 
 CREATE PROCEDURE actualizar_tasa_de_cambio(
     IN p_currency_id INT,
@@ -20,6 +20,4 @@ BEGIN
             SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Advertencia: No se encontraron registros para actualizar con el currency_id proporcionado.';
         END IF;
     END IF;
-END $$
-
-DELIMITER ;
+END;
