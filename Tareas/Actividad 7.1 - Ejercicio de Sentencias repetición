@@ -1,0 +1,35 @@
+DELIMITER //
+
+CREATE PROCEDURE SimuladorAhorro(
+    IN monto DECIMAL(10,2), 
+    IN meses INT
+)
+BEGIN
+    DECLARE mes INT DEFAULT 1;
+    DECLARE saldo DECIMAL(10,2) DEFAULT 0;
+
+
+    CREATE TEMPORARY TABLE IF NOT EXISTS AhorroSimulador (
+        Mes INT,
+        MontoConstante DECIMAL(10,2),
+        SaldoAcumulado DECIMAL(10,2)
+    );
+
+    TRUNCATE TABLE AhorroSimulador;
+
+    WHILE mes <= meses DO
+        SET saldo = saldo + monto;
+        INSERT INTO AhorroSimulador (Mes, MontoConstante, SaldoAcumulado) 
+        VALUES (mes, monto, saldo);
+        
+        SET mes = mes + 1;
+    END WHILE;
+
+
+    SELECT * FROM AhorroSimulador;
+
+    DROP TEMPORARY TABLE IF EXISTS AhorroSimulador;
+    
+END;
+
+CALL SimuladorAhorro(100.00, 6);
