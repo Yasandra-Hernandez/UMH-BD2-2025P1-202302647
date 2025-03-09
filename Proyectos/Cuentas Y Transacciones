@@ -1,0 +1,66 @@
+
+ /*Creacion de las tablas*/
+CREATE TABLE cuentas (
+    cuenta VARCHAR(10) PRIMARY KEY,
+    totalCreditos DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    totalDebitos DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    saldo DECIMAL(10,2) NOT NULL DEFAULT 0.00
+);
+
+CREATE TABLE transacciones (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    cuenta VARCHAR(10),
+    fecha DATE,
+    credito DECIMAL(10,2) DEFAULT 0.00,
+    debito DECIMAL(10,2) DEFAULT 0.00,
+    FOREIGN KEY (cuenta) REFERENCES cuentas(cuenta)
+);
+
+ /*Insercion de datos*/
+
+INSERT INTO cuentas (cuenta, totalCreditos, totalDebitos, saldo)
+VALUES 
+    ('20010001', 800.00, 0.00, 800.00),
+    ('20010002', 560.00, 0.00, 560.00),
+    ('20010003', 1254.00, 0.00, 1254.00),
+    ('20010004', 15000.00, 0.00, 15000.00),
+    ('20010005', 256.00, 0.00, 256.00);
+
+INSERT INTO transacciones (cuenta, fecha, credito, debito)
+VALUES 
+    ('20010001', '2024-12-12', 800.00, 0.00),
+    ('20010002', '2025-01-05', 560.00, 0.00),
+    ('20010003', '2024-10-30', 1254.00, 0.00),
+    ('20010004', '2025-01-14', 15000.00, 0.00),
+    ('20010005', '2024-11-23', 256.00, 0.00);
+    
+    
+    
+DELIMITER //
+
+CREATE PROCEDURE realizar_transaccion(
+    IN p_cuenta VARCHAR(10),
+    IN p_fecha DATE,
+    IN p_credito DECIMAL(10,2),
+    IN p_debito DECIMAL(10,2)
+)
+BEGIN
+    /*Insertar la transacción en la tabla de transacciones*/
+    INSERT INTO transacciones (cuenta, fecha, credito, debito)
+    VALUES (p_cuenta, p_fecha, p_credito, p_debito);
+
+    /*Actualizar los valores de totalCreditos, totalDebitos y saldo en la tabla de cuentas*/
+    UPDATE cuentas
+    SET 
+        totalCreditos = totalCreditos + p_credito,
+        totalDebitos = totalDebitos + p_debito,
+        saldo = saldo + p_credito - p_debito
+    WHERE cuenta = p_cuenta;
+END;
+
+CALL realizar_transaccion('20010001', '2025-03-09', 100.00, 0.00);
+CALL realizar_transaccion('20010002', '2025-03-09', 0.00, 50.00);
+
+DROP PROCEDURE IF EXISTS realizar_transaccion;
+
+    
